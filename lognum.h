@@ -18,7 +18,6 @@
 typedef ap_fixed<WBITS,INTBITS,AP_RND_ZERO,AP_SAT,NBITS> fixedtype;
 
 // Get a mask that is "100000.000000"
-
 static fixedtype MIN_VAL = fixedtype(-1*pow(BASE,INTBITS-1));
 
 class lognum {
