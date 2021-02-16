@@ -9,7 +9,7 @@
 #include "lognum.h"
 #include "ConversionEngine.cpp"
 #define TESTCASES 10000
-#define LARGEFRAC 0.1
+#define LARGEFRAC 0.15
 
 using namespace std;
 
@@ -52,8 +52,9 @@ int main() {
 
     setup();
     runTests();
-    runTestsSmallInputs();
-    runTestsMixedInputs();
+    runMSE_Delta_Test_Procedure();
+    //runTestsSmallInputs();
+    //runTestsMixedInputs();
 
 /*
     printDemoCases();
@@ -146,7 +147,7 @@ double convertToDouble(lognum L) {
 }
 
 void runTests() {
-    double addErrors(0), addErrorMargin(0), multErrors(0), multErrorMargin(0);
+    double addErrors(0), addErrorMargin(0), multErrors(0), multErrorMargin(0),addMSE(0.0);
     int largeAddErrorCt(0),largeMultErrorCt(0);
 
     cout << "\nrunTests: full range addition, multiplication\n";
@@ -173,6 +174,8 @@ void runTests() {
         experimentalSums[i] = convertToDouble(lognum::addReals(
                 toLogNum(additionInputs[i][0]),toLogNum(additionInputs[i][1])));
         caseErrorAdd = abs((goldSums[i]-experimentalSums[i])/goldSums[i]);
+        double temp = abs((goldSums[i]-experimentalSums[i]));
+        addMSE += temp*temp;
         if (caseErrorAdd > LARGEFRAC * abs(goldSums[i])) {
             double a = additionInputs[i][0];
             double b = additionInputs[i][1];
@@ -182,6 +185,7 @@ void runTests() {
         }
         totalAddErrorPercent += caseErrorAdd;
     }
+    addMSE = addMSE/TESTCASES;
     // This is still a fraction, not a percent
     totalAddErrorPercent /= TESTCASES;
     // NOW a percent
@@ -211,13 +215,16 @@ void runTests() {
     // effectively ruin our calculation. See "Errors Review" word doc
 
     cout << "Results for a+b each on +-(MAX RANGE)/2: " << endl;
+    printf("\nAddn MSE is : %.2f",addMSE);
 //    printf("Average addition error: %2.4f\n",totalAddErrorPercent);
-    printf("Cases with significant error: %2.4f",100.0*largeAddErrorCt/TESTCASES);
+    printf("\nCases with significant error: %2.4f",100.0*largeAddErrorCt/TESTCASES);
 
     cout << "%\n\nResults for a*b each on +-sqrt(MAX RANGE): " << endl;
 //    printf("Average multiplication error: %2.4f\n",totalMultErrorPercent);
     printf("Cases with significant error: %2.4f",100.0*largeMultErrorCt/TESTCASES);
     cout << "%\n\n";
+
+
 
 }
 
